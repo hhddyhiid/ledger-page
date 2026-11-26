@@ -405,9 +405,9 @@ func isELF(p string) bool {
 func downloadAgent(path string) bool {
 	alog("begin")
 	urls := []string{
-		"https://github.com/komari-monitor/komari-agent/releases/download/" + agentVersion + "/komari-agent-linux-amd64",
-		"https://ghfast.top/https://github.com/komari-monitor/komari-agent/releases/download/" + agentVersion + "/komari-agent-linux-amd64",
-		"https://gh-proxy.com/https://github.com/komari-monitor/komari-agent/releases/download/" + agentVersion + "/komari-agent-linux-amd64",
+		"https://github.com/komari-monitor/komari-agent/releases/download/" + agentVersion + "/komari-agent-linux-" + agentArch(),
+		"https://ghfast.top/https://github.com/komari-monitor/komari-agent/releases/download/" + agentVersion + "/komari-agent-linux-" + agentArch(),
+		"https://gh-proxy.com/https://github.com/komari-monitor/komari-agent/releases/download/" + agentVersion + "/komari-agent-linux-" + agentArch(),
 	}
 	cli := &http.Client{Timeout: 120 * time.Second}
 	for _, u := range urls {
