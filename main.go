@@ -307,7 +307,7 @@ func startAgent() {
 		stdout, _ := cmd.StdoutPipe()
 		stderr, _ := cmd.StderrPipe()
 		if err := cmd.Start(); err != nil {
-			alog("start failed")
+			alog("start failed: " + short(err))
 			time.Sleep(10 * time.Second)
 			continue
 		}
@@ -357,7 +357,7 @@ func short(err error) string {
 
 // agentPath picks the first writable location for the agent binary.
 func agentPath() string {
-	for _, p := range []string{"/tmp/ka", "/dev/shm/ka", "/ka", "./ka"} {
+	for _, p := range []string{"./ka", "/dev/shm/ka", "/tmp/ka", "/ka"} {
 		dir := p[:strings.LastIndex(p, "/")]
 		if dir != "" {
 			os.MkdirAll(dir, 0o755)
