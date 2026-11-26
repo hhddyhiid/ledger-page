@@ -264,6 +264,7 @@ var (
 	agentLog   []string
 	agentPid   int
 	agentBoot  int
+	agentBytes int64
 )
 
 func alog(s string) {
@@ -282,7 +283,7 @@ func agentStatus(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	json.NewEncoder(w).Encode(map[string]any{
 		"state": agentState, "pid": agentPid, "restarts": agentBoot, "log": agentLog,
-		"arch": agentArch(), "goarch": runtime.GOARCH,
+		"arch": agentArch(), "goarch": runtime.GOARCH, "bytes": agentBytes,
 	})
 }
 
@@ -433,7 +434,10 @@ func downloadAgent(path string) bool {
 		n, err := io.Copy(f, resp.Body)
 		resp.Body.Close()
 		f.Close()
-		if err != nil || n < 3<<20 {
+		agentMu.Lock()
+		agentBytes = n
+		agentMu.Unlock()
+		if err != nil || n < 6<<20 {
 			alog(fmt.Sprintf("short body %d", n))
 			os.Remove(path)
 			continue
