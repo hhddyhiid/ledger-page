@@ -236,8 +236,22 @@ func main() {
 
 const agentVersion = "1.6.20"
 
-// agentArch names the build the container can run.
+// agentArch names the build the container can run, read from our own binary
+// so it matches the machine even when cross-built.
 func agentArch() string {
+	if f, err := os.Open("/proc/self/exe"); err == nil {
+		var h [20]byte
+		_, rerr := io.ReadFull(f, h[:])
+		f.Close()
+		if rerr == nil && h[0] == 0x7f && h[1] == 'E' && h[2] == 'L' && h[3] == 'F' {
+			switch binary.LittleEndian.Uint16(h[18:]) {
+			case 0xb7:
+				return "arm64"
+			case 0x3e:
+				return "amd64"
+			}
+		}
+	}
 	if runtime.GOARCH == "arm64" {
 		return "arm64"
 	}
